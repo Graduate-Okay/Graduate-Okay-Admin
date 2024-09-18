@@ -18,11 +18,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    //"allowImportingTsExtensions": true
+    "baseUrl": "./src",
+    "paths": {
+      "*": ["*", "Pages/*"]
+    }
   },
-  "include": [
-    "src"
-  ]
-  // "include": ["src/**/*"],
-  // "exclude": ["node_modules", "**/*.test.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
