@@ -12,6 +12,8 @@ import { useAuth } from './context/AuthContext';
 import NoticeDetail from './pages/Notice/NoticeDetail';
 import NoticeWrite from './pages/Notice/NoticeWrite';
 import NoticeEdit from './pages/Notice/NoticeEdit';
+import AdminNew from './pages/Admin/AdminNew';
+import AdminEdit from './pages/Admin/AdminEdit';
 
 const App: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -30,17 +32,19 @@ const App: React.FC = () => {
             <Route path="/review" element={<Review />} />
             <Route path="/user" element={<User />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/new" element={<AdminNew />} />
+            <Route path="/admin/:id" element={<AdminEdit />} />
             <Route path="*" element={<Navigate to="/" />} />
           </>
         ) : (
           <>
             <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/login" />} /> 
+            <Route path="*" element={<Navigate to="/login" />} />
           </>
         )}
       </Routes>
     </Layout>
   );
-}
+};
 
 export default App;

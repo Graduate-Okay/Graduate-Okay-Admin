@@ -1,33 +1,65 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
+import axios from 'axios';
+import api from './../apis/api';
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: () => void;
+  loginId: string;
+  login: (id: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loginId, setLoginId] = useState<string>('');
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    setIsLoggedIn(!!token);
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (accessToken && refreshToken) {
+      setIsLoggedIn(true);
+    }
   }, []);
 
-  const login = () => {
-    localStorage.setItem('accessToken', 'mock-access-token');
-    setIsLoggedIn(true);
+  const login = async (id: string, password: string) => {
+    try {
+      const { data } = await axios.post(`${api.admin}/login`, {
+        loginId: id,
+        password: password,
+      });
+
+      const { accessToken, refreshToken } = data.data.tokenInfo;
+      const { loginId } = data.data;
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      setLoginId(loginId);
+      setIsLoggedIn(true);
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    setLoginId('');
     setIsLoggedIn(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, loginId, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
